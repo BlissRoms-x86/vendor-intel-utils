@@ -100,8 +100,10 @@ if [[ "$conflict" == "y" ]]; then
   echo "==========================================================================="
   for i in $conflict_list ; do echo $i; done | sort -u
   echo "==========================================================================="
-  echo -e "Error: Please resolve Conflict(s) and re-run lunch..."
-  echo '$(error "Conflicts seen while applying lunch patches !! Resolve and re-trigger")' > $top_dir/vendor/intel/utils/Android.mk
+  # echo -e "Error: Please resolve Conflict(s) and re-run lunch..."
+  # echo '$(error "Conflicts seen while applying lunch patches !! Resolve and re-trigger")' > $top_dir/vendor/intel/utils/Android.mk
+  echo "WARNING: Please resolve Conflict(s). You may need to re-run build..." 
+  # > $top_dir/vendor/intel/utils/Android.mk
 else
   echo "==========================================================================="
   echo "           SUCCESS : All patches applied fine !!                           "
