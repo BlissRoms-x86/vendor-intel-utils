@@ -1,7 +1,7 @@
-From dfca99f491a7a380714ae27b83172150c592aaa1 Mon Sep 17 00:00:00 2001
-From: Jeevaka Prabu Badrappan <jeevaka.badrappan@intel.com>
+From 72cb9a5c31b1f944f90bd1b50289028f354b2dee Mon Sep 17 00:00:00 2001
+From: Amrita Raju <amrita.raju@intel.com>
 Date: Thu, 7 Feb 2019 11:29:37 +0530
-Subject: [PATCH 2/2] Skip private commands causing vts failure
+Subject: [PATCH] Skip private commands causing vts failure
 
 As some of the vendor interfaces requires usage of
 vendor specific commands and also some are not applicable or
@@ -10,13 +10,14 @@ success.
 
 Change-Id: I71f30416ca83bb9e3b6bfef2e10691f00857368f
 Tracked-On: OAM-75989
+Signed-off-by: Amrita Raju <amrita.raju@intel.com>
 Signed-off-by: Jeevaka Prabu Badrappan <jeevaka.badrappan@intel.com>
 ---
  src/drivers/driver_nl80211.c | 19 +++++++++++++++++++
  1 file changed, 19 insertions(+)
 
 diff --git a/src/drivers/driver_nl80211.c b/src/drivers/driver_nl80211.c
-index 1d4dbf2c..c42b4012 100644
+index 1d4dbf2..c42b401 100644
 --- a/src/drivers/driver_nl80211.c
 +++ b/src/drivers/driver_nl80211.c
 @@ -2409,6 +2409,25 @@ int wpa_driver_nl80211_driver_cmd(void *priv, char *cmd, char *buf, size_t buf_l
