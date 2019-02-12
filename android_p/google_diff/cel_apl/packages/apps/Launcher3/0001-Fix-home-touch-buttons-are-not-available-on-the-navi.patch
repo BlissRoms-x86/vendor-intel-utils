@@ -1,4 +1,4 @@
-From 41b4d8ecc6e2604dd949788800a8f6f930e8ab46 Mon Sep 17 00:00:00 2001
+From de555b4a9fcdb6b93a7a442e3aa388f5481a1d61 Mon Sep 17 00:00:00 2001
 From: "Yue, VincentX" <vincentx.yue@intel.com>
 Date: Wed, 7 Mar 2018 17:59:46 +0800
 Subject: [PATCH] Fix home touch buttons are not available on the navigationBar
@@ -20,18 +20,18 @@ Signed-off-by: Yue, VincentX <vincentx.yue@intel.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/AndroidManifest.xml b/AndroidManifest.xml
-index 23bddf6..295544e 100644
+index 9c2898cef..1a211b0a3 100644
 --- a/AndroidManifest.xml
 +++ b/AndroidManifest.xml
-@@ -20,7 +20,7 @@
- <manifest
-     xmlns:android="http://schemas.android.com/apk/res/android"
-     package="com.android.launcher3">
+@@ -23,7 +23,7 @@
+     coreApp="true"
+     android:sharedUserId="android.uid.system">
+ 
 -    <uses-sdk android:targetSdkVersion="23" android:minSdkVersion="21"/>
 +    <uses-sdk android:targetSdkVersion="27" android:minSdkVersion="21"/>
      <!--
      Manifest entries specific to Launcher3. This is merged with AndroidManifest-common.xml.
      Refer comments around specific entries on how to extend individual components.
 -- 
-1.9.1
+2.17.1
 
