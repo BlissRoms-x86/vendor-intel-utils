@@ -1,0 +1,58 @@
+From 2efe9fc7432b61301ed6cfaf6f90990122a7898a Mon Sep 17 00:00:00 2001
+From: Felix <google@ix5.org>
+Date: Tue, 15 Jan 2019 23:43:35 +0100
+Subject: [PATCH 2/2] sepolicy: Fix init denials
+
+init.local.rc(a.k.a. init.omni.rc on-device) needs to write disk
+schedulers.
+It also wants mount debugfs, but only allow that on debug builds.
+
+avc: denied { mounton } for comm="init" path="/sys/kernel/debug" \
+  dev="debugfs" ino=1 scontext=u:r:init:s0 tcontext=u:object_r:debugfs:s0 tclass=dir
+avc: denied { setattr } for name="scheduler" dev="sysfs" ino=45146 \
+  scontext=u:r:init:s0 tcontext=u:object_r:sysfs:s0 tclass=file
+
+Change-Id: I68e8dd982504c4673947d73119fa342f7fcd943b
+---
+ sepolicy/private/file.te       | 2 ++
+ sepolicy/private/file_contexts | 3 +++
+ sepolicy/private/init.te       | 7 +++++++
+ 3 files changed, 12 insertions(+)
+ create mode 100644 sepolicy/private/file.te
+ create mode 100644 sepolicy/private/init.te
+
+diff --git a/sepolicy/private/file.te b/sepolicy/private/file.te
+new file mode 100644
+index 00000000..d01594e7
+--- /dev/null
++++ b/sepolicy/private/file.te
+@@ -0,0 +1,2 @@
++type sysfs_block_scheduler, fs_type, sysfs_type;
++
+diff --git a/sepolicy/private/file_contexts b/sepolicy/private/file_contexts
+index 40295bb8..b62ada70 100644
+--- a/sepolicy/private/file_contexts
++++ b/sepolicy/private/file_contexts
+@@ -2,3 +2,6 @@
+ /system/bin/backuptool_ab\.functions              u:object_r:otapreopt_chroot_exec:s0
+ /system/bin/backuptool_ab\.sh                     u:object_r:otapreopt_chroot_exec:s0
+ /system/bin/backuptool_postinstall\.sh            u:object_r:otapreopt_chroot_exec:s0
++
++# Set disk scheduler via init
++/sys/block/[^/]+/queue/scheduler                   u:object_r:sysfs_block_scheduler:s0
+diff --git a/sepolicy/private/init.te b/sepolicy/private/init.te
+new file mode 100644
+index 00000000..3491bafd
+--- /dev/null
++++ b/sepolicy/private/init.te
+@@ -0,0 +1,7 @@
++# Set disk scheduler in init.local.rc
++allow init sysfs_block_scheduler:file { open setattr write };
++
++# Mount debugfs in init.local.rc
++userdebug_or_eng(`
++  allow init debugfs:dir mounton;
++')
+-- 
+2.17.1
+

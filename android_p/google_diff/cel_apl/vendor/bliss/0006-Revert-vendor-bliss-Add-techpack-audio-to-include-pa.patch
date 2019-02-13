@@ -1,0 +1,27 @@
+From 6615bc99f58e93e2ba390b02885b52afb16fd3c0 Mon Sep 17 00:00:00 2001
+From: Jackeagle <jackeagle102@gmail.com>
+Date: Mon, 3 Dec 2018 10:56:58 -0500
+Subject: [PATCH 6/9] Revert "vendor/bliss: Add techpack/audio to include path
+ also"
+
+This reverts commit 3f22fe9e171b1dd2697d3a5c76fab2d614837064.
+---
+ build/soong/Android.bp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/build/soong/Android.bp b/build/soong/Android.bp
+index 057dea8c..3addbe36 100644
+--- a/build/soong/Android.bp
++++ b/build/soong/Android.bp
+@@ -30,7 +30,7 @@ bliss_generator {
+     cmd: "make $(KERNEL_MAKE_FLAGS) -C $(TARGET_KERNEL_SOURCE) O=$(genDir) ARCH=$(KERNEL_ARCH) $(KERNEL_CROSS_COMPILE) headers_install",
+ 
+     // Directories that can be imported by a cc_* module generated_headers property
+-    export_include_dirs: ["usr/include", "usr/techpack/audio/include"],
++    export_include_dirs: ["usr/include"],
+ 
+     // Sources for dependency tracking
+     dep_root: "$(TARGET_KERNEL_SOURCE)",
+-- 
+2.17.1
+

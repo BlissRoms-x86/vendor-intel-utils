@@ -1,0 +1,26 @@
+From e940ffd87c875a2731af22a6acee8bcc63874b09 Mon Sep 17 00:00:00 2001
+From: Jon West <electrikjesus@gmail.com>
+Date: Thu, 31 Jan 2019 14:15:47 -0500
+Subject: [PATCH] Switch to Stable-Dev for maintenance version
+
+Change-Id: I6fe7cc5600558f8a79ccce7def44944fc036c55a
+---
+ config/versions.mk | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/config/versions.mk b/config/versions.mk
+index 648f3a18..095bb3e0 100644
+--- a/config/versions.mk
++++ b/config/versions.mk
+@@ -2,7 +2,7 @@
+ # Bliss RELEASE VERSION
+ BLISS_VERSION_MAJOR = 11
+ BLISS_VERSION_MINOR = 4
+-BLISS_VERSION_MAINTENANCE = Stable
++BLISS_VERSION_MAINTENANCE = Stable-Dev
+ 
+ VERSION := $(BLISS_VERSION_MAJOR).$(BLISS_VERSION_MINOR)-$(BLISS_VERSION_MAINTENANCE)
+ 
+-- 
+2.17.1
+

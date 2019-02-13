@@ -1,0 +1,47 @@
+From 02703201a3d2b228620fbbfcca4a44c53f821ffe Mon Sep 17 00:00:00 2001
+From: Jackeagle <jackeagle102@gmail.com>
+Date: Wed, 19 Dec 2018 17:06:59 +0100
+Subject: [PATCH 10/11] Revert "soong_config: Add flag for crypto waiting on
+ QSEE to start"
+
+This reverts commit 9ce6d1fa37b1bf4ac78f9fcd10302820f8161565.
+---
+ build/soong/android/variable.go | 4 ----
+ build/soong/soong_config.mk     | 1 -
+ 2 files changed, 5 deletions(-)
+
+diff --git a/build/soong/android/variable.go b/build/soong/android/variable.go
+index 67452c7..0123521 100644
+--- a/build/soong/android/variable.go
++++ b/build/soong/android/variable.go
+@@ -36,9 +36,6 @@ type Product_variables struct {
+ 	Device_support_legacy_hwfde struct {
+ 		Cflags []string
+ 	}
+-	Device_support_wait_for_qsee struct {
+-		Cflags []string
+-	}
+ }
+ 
+ type ProductVariables struct {
+@@ -54,5 +51,4 @@ type ProductVariables struct {
+ 	Device_support_hwfde       *bool `json:",omitempty"`
+ 	Device_support_hwfde_perf  *bool `json:",omitempty"`
+ 	Device_support_legacy_hwfde  *bool `json:",omitempty"`
+-	Device_support_wait_for_qsee  *bool `json:",omitempty"`
+ }
+diff --git a/build/soong/soong_config.mk b/build/soong/soong_config.mk
+index 91e0b41..c31cb22 100644
+--- a/build/soong/soong_config.mk
++++ b/build/soong/soong_config.mk
+@@ -7,7 +7,6 @@ $(call add_json_str_omitempty, Additional_gralloc_10_usage_bits, $(TARGET_ADDITI
+ $(call add_json_bool, Device_support_hwfde, $(filter true,$(TARGET_HW_DISK_ENCRYPTION)))
+ $(call add_json_bool, Device_support_hwfde_perf, $(filter true,$(TARGET_HW_DISK_ENCRYPTION_PERF)))
+ $(call add_json_bool, Device_support_legacy_hwfde, $(filter true,$(TARGET_LEGACY_HW_DISK_ENCRYPTION)))
+-$(call add_json_bool, Device_support_wait_for_qsee, $(filter true,$(TARGET_KEYMASTER_WAIT_FOR_QSEE)))
+ $(call add_json_bool, Has_legacy_camera_hal1,                $(filter true,$(TARGET_HAS_LEGACY_CAMERA_HAL1)))
+ $(call add_json_str,  Specific_camera_parameter_library,     $(TARGET_SPECIFIC_CAMERA_PARAMETER_LIBRARY))
+ $(call add_json_str_omitempty, Target_shim_libs,             $(TARGET_LD_SHIM_LIBS))
+-- 
+2.17.1
+

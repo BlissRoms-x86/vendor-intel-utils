@@ -1,0 +1,197 @@
+From df7d12a93f9eae6b35debd5a39286962bf973fdd Mon Sep 17 00:00:00 2001
+From: Jackeagle <jackeagle102@gmail.com>
+Date: Mon, 3 Dec 2018 10:55:28 -0500
+Subject: [PATCH 1/9] Revert "verity_tool: Implement status getter"
+
+This reverts commit 385296fd334a854915d41ef556ce7bb981f66bb3.
+---
+ config/BoardConfigBliss.mk        |  8 ++--
+ verity_tool/include/verity_tool.h | 15 --------
+ verity_tool/main.cpp              | 27 +------------
+ verity_tool/verity_tool.cpp       | 63 -------------------------------
+ 4 files changed, 6 insertions(+), 107 deletions(-)
+
+diff --git a/config/BoardConfigBliss.mk b/config/BoardConfigBliss.mk
+index 032e0613..7ccae1d4 100644
+--- a/config/BoardConfigBliss.mk
++++ b/config/BoardConfigBliss.mk
+@@ -9,8 +9,8 @@ ifeq ($(TARGET_HW_DISK_ENCRYPTION),true)
+ endif
+ 
+ include vendor/bliss/config/BoardConfigKernel.mk
+-include vendor/bliss/config/BoardConfigSoong.mk
++include vendor/lineage/config/BoardConfigSoong.mk
+ 
+-ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
+-include vendor/bliss/config/BoardConfigQcom.mk
+-endif
++ifeq ($(BOARD_USES_QCOM_HARDWARE),true) 
++include vendor/bliss/config/BoardConfigQcom.mk 
++endif 
+diff --git a/verity_tool/include/verity_tool.h b/verity_tool/include/verity_tool.h
+index b81eda1a..25a6a7c2 100644
+--- a/verity_tool/include/verity_tool.h
++++ b/verity_tool/include/verity_tool.h
+@@ -18,14 +18,6 @@
+ 
+ #include <string>
+ 
+-typedef enum {
+-    VERITY_STATE_UNKNOWN,
+-    VERITY_STATE_NO_DEVICE,
+-    VERITY_STATE_DISABLED,
+-    VERITY_STATE_ENABLED,
+-    VERITY_STATE_MAX = VERITY_STATE_ENABLED
+-} verity_state_t;
+-
+ /*
+  * Return codes:
+  *
+@@ -35,13 +27,6 @@ typedef enum {
+ bool set_block_device_verity_enabled(const std::string& block_device,
+                                      bool enable);
+ 
+-/*
+- * Return codes:
+- *
+- *    verity state (unknown, disabled, enabled)
+- */
+-verity_state_t get_verity_state();
+-
+ /*
+  * Return codes:
+  *
+diff --git a/verity_tool/main.cpp b/verity_tool/main.cpp
+index befdafac..f5f026aa 100644
+--- a/verity_tool/main.cpp
++++ b/verity_tool/main.cpp
+@@ -24,23 +24,20 @@ static void print_usage() {
+     printf("veritytool - toggle block device verification\n"
+            "    --help        show this help\n"
+            "    --enable      enable dm-verity\n"
+-           "    --disable     disable dm-verity\n"
+-           "    --show        show current dm-verity state\n");
++           "    --disable     disable dm-verity\n");
+ }
+ 
+ int main(int argc, char** argv) {
+     int c, rc;
+     int enable = 0;
+-    int show = 0;
+     bool flag_set = false;
+     struct option long_opts[] = {
+         {"disable", no_argument, &enable, 0},
+         {"enable", no_argument, &enable, 1},
+-        {"show", no_argument, &show, 1},
+         {NULL, 0, NULL, 0},
+     };
+ 
+-    while ((c = getopt_long(argc, argv, "des", long_opts, NULL)) != -1) {
++    while ((c = getopt_long(argc, argv, "de", long_opts, NULL)) != -1) {
+         switch (c) {
+             case 0:
+                 flag_set = true;
+@@ -56,26 +53,6 @@ int main(int argc, char** argv) {
+         exit(0);
+     }
+ 
+-    if (show) {
+-        printf("dm-verity state: ");
+-        switch (get_verity_state()) {
+-            case VERITY_STATE_NO_DEVICE:
+-                printf("NO DEVICE");
+-                break;
+-            case VERITY_STATE_DISABLED:
+-                printf("DISABLED");
+-                break;
+-            case VERITY_STATE_ENABLED:
+-                printf("ENABLED");
+-                break;
+-            default:
+-                printf("UNKNOWN");
+-                break;
+-        }
+-        printf("\n");
+-        return 0;
+-    }
+-
+     if (!set_verity_enabled(enable)) {
+         printf("Error occurred in set_verity_enable\n");
+         exit(EXIT_FAILURE);
+diff --git a/verity_tool/verity_tool.cpp b/verity_tool/verity_tool.cpp
+index 48e95b67..9575c4c1 100644
+--- a/verity_tool/verity_tool.cpp
++++ b/verity_tool/verity_tool.cpp
+@@ -108,69 +108,6 @@ static std::string get_ab_suffix() {
+     return ab_suffix;
+ }
+ 
+-verity_state_t get_verity_state() {
+-    verity_state_t rc = VERITY_STATE_NO_DEVICE;
+-    std::string ab_suffix = get_ab_suffix();
+-
+-    // Figure out if we're using VB1.0 or VB2.0 (aka AVB) - by
+-    // contract, androidboot.vbmeta.digest is set by the bootloader
+-    // when using AVB).
+-    bool using_avb = !android::base::GetProperty("ro.boot.vbmeta.digest", "").empty();
+-
+-    if (using_avb) {
+-        // Yep, the system is using AVB.
+-        AvbOps* ops = avb_ops_user_new();
+-        if (ops == nullptr) {
+-            LOG(ERROR) << "Error getting AVB ops";
+-            avb_ops_user_free(ops);
+-            return VERITY_STATE_UNKNOWN;
+-        }
+-        bool verity_enabled;
+-        if (!avb_user_verity_get(ops, ab_suffix.c_str(), &verity_enabled)) {
+-            LOG(ERROR) << "Error getting verity state";
+-            avb_ops_user_free(ops);
+-            return VERITY_STATE_UNKNOWN;
+-        }
+-        rc = verity_enabled ? VERITY_STATE_ENABLED : VERITY_STATE_DISABLED;
+-        avb_ops_user_free(ops);
+-    } else {
+-        // Not using AVB - assume VB1.0.
+-
+-        // read all fstab entries at once from all sources
+-        struct fstab* fstab = fs_mgr_read_fstab_default();
+-        if (!fstab) {
+-            LOG(ERROR) << "Failed to read fstab";
+-            fs_mgr_free_fstab(fstab);
+-            return VERITY_STATE_UNKNOWN;
+-        }
+-
+-        // Loop through entries looking for ones that vold manages.
+-        for (int i = 0; i < fstab->num_entries; i++) {
+-            if (fs_mgr_is_verified(&fstab->recs[i])) {
+-                std::string block_device = fstab->recs[i].blk_device;
+-                fec::io fh(block_device, O_RDONLY);
+-                if (!fh) {
+-                    PLOG(ERROR) << "Could not open block device " << block_device;
+-                    rc = VERITY_STATE_UNKNOWN;
+-                    break;
+-                }
+-
+-                fec_verity_metadata metadata;
+-                if (!fh.get_verity_metadata(metadata)) {
+-                    LOG(ERROR) << "Couldn't find verity metadata!";
+-                    rc = VERITY_STATE_UNKNOWN;
+-                    break;
+-                }
+-
+-                rc = metadata.disabled ? VERITY_STATE_DISABLED : VERITY_STATE_ENABLED;
+-            }
+-        }
+-        fs_mgr_free_fstab(fstab);
+-    }
+-
+-    return rc;
+-}
+-
+ /* Use AVB to turn verity on/off */
+ static bool set_avb_verity_enabled_state(AvbOps* ops, bool enable_verity) {
+     std::string ab_suffix = get_ab_suffix();
+-- 
+2.17.1
+

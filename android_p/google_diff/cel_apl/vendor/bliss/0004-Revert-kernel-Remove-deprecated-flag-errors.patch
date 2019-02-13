@@ -1,0 +1,30 @@
+From 456d8976a21cbdce213b2e5a1113724c4a05d06f Mon Sep 17 00:00:00 2001
+From: Jackeagle <jackeagle102@gmail.com>
+Date: Mon, 3 Dec 2018 10:56:00 -0500
+Subject: [PATCH 4/9] Revert "kernel: Remove deprecated flag errors"
+
+This reverts commit 31a4c13150d86dd3690fe4b79678f0578900591c.
+---
+ build/tasks/kernel.mk | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/build/tasks/kernel.mk b/build/tasks/kernel.mk
+index 61d63bcc..b42d86dc 100644
+--- a/build/tasks/kernel.mk
++++ b/build/tasks/kernel.mk
+@@ -77,6 +77,12 @@ KERNEL_DEFCONFIG_SRC := $(KERNEL_SRC)/arch/$(KERNEL_DEFCONFIG_ARCH)/configs/$(KE
+ ifeq ($(BOARD_KERNEL_IMAGE_NAME),)
+ $(error BOARD_KERNEL_IMAGE_NAME not defined.)
+ endif
++ifneq ($(TARGET_USES_UNCOMPRESSED_KERNEL),)
++$(error TARGET_USES_UNCOMPRESSED_KERNEL is deprecated.)
++endif
++ifneq ($(TARGET_KERNEL_APPEND_DTB),)
++$(error TARGET_KERNEL_APPEND_DTB is deprecated.)
++endif
+ TARGET_PREBUILT_INT_KERNEL := $(KERNEL_OUT)/arch/$(KERNEL_ARCH)/boot/$(BOARD_KERNEL_IMAGE_NAME)
+ 
+ ifneq ($(TARGET_KERNEL_ADDITIONAL_CONFIG),)
+-- 
+2.17.1
+

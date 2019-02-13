@@ -1,0 +1,60 @@
+From e9a1c2d62bc123e66ac785f48b86334e33190fdf Mon Sep 17 00:00:00 2001
+From: Jackeagle <jackeagle102@gmail.com>
+Date: Wed, 19 Dec 2018 17:07:12 +0100
+Subject: [PATCH 11/11] Revert "soong_config: Add flag for legacy HW FDE"
+
+This reverts commit b9c76da9c82d09514aeaaf74a13ed6c5bc32dfcb.
+---
+ build/soong/android/variable.go | 16 +---------------
+ build/soong/soong_config.mk     |  3 ---
+ 2 files changed, 1 insertion(+), 18 deletions(-)
+
+diff --git a/build/soong/android/variable.go b/build/soong/android/variable.go
+index 0123521..c11ec95 100644
+--- a/build/soong/android/variable.go
++++ b/build/soong/android/variable.go
+@@ -25,17 +25,6 @@ type Product_variables struct {
+ 	Target_process_sdk_version_override struct {
+ 		Cppflags []string
+ 	}
+-        Device_support_hwfde struct {
+-                Cflags []string
+-		Header_libs []string
+-		Shared_libs []string
+-	}
+-	Device_support_hwfde_perf struct {
+-		Cflags []string
+-	}
+-	Device_support_legacy_hwfde struct {
+-		Cflags []string
+-	}
+ }
+ 
+ type ProductVariables struct {
+@@ -47,8 +36,5 @@ type ProductVariables struct {
+ 	Uses_nvidia_enhancements  *bool `json:",omitempty"`
+ 	Uses_qcom_bsp_legacy  *bool `json:",omitempty"`
+ 	Uses_qti_camera_device  *bool `json:",omitempty"`
+-	Target_process_sdk_version_override *string `json:",omitempty"`
+-	Device_support_hwfde       *bool `json:",omitempty"`
+-	Device_support_hwfde_perf  *bool `json:",omitempty"`
+-	Device_support_legacy_hwfde  *bool `json:",omitempty"`
++ 	Target_process_sdk_version_override *string `json:",omitempty"`
+ }
+diff --git a/build/soong/soong_config.mk b/build/soong/soong_config.mk
+index c31cb22..d4ea787 100644
+--- a/build/soong/soong_config.mk
++++ b/build/soong/soong_config.mk
+@@ -4,9 +4,6 @@ _contents := $(_contents)    "Bliss":{$(newline)
+ 
+ # See build/core/soong_config.mk for the add_json_* functions you can use here.
+ $(call add_json_str_omitempty, Additional_gralloc_10_usage_bits, $(TARGET_ADDITIONAL_GRALLOC_10_USAGE_BITS))
+-$(call add_json_bool, Device_support_hwfde, $(filter true,$(TARGET_HW_DISK_ENCRYPTION)))
+-$(call add_json_bool, Device_support_hwfde_perf, $(filter true,$(TARGET_HW_DISK_ENCRYPTION_PERF)))
+-$(call add_json_bool, Device_support_legacy_hwfde, $(filter true,$(TARGET_LEGACY_HW_DISK_ENCRYPTION)))
+ $(call add_json_bool, Has_legacy_camera_hal1,                $(filter true,$(TARGET_HAS_LEGACY_CAMERA_HAL1)))
+ $(call add_json_str,  Specific_camera_parameter_library,     $(TARGET_SPECIFIC_CAMERA_PARAMETER_LIBRARY))
+ $(call add_json_str_omitempty, Target_shim_libs,             $(TARGET_LD_SHIM_LIBS))
+-- 
+2.17.1
+

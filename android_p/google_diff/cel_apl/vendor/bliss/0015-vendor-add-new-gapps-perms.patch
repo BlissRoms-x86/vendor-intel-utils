@@ -1,0 +1,26 @@
+From 39685511088acbcdf2d008724f6c97f4ed4db5e3 Mon Sep 17 00:00:00 2001
+From: Marko Man <darkobas@gmail.com>
+Date: Mon, 10 Sep 2018 13:47:03 +0200
+Subject: [PATCH 3/6] vendor: add new gapps perms
+
+Change-Id: I4e4326ccec8fd1b32e82d06e94be8c0ecdac3c5a
+---
+ prebuilt/etc/permissions/privapp-permissions-elgoog.xml | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/prebuilt/etc/permissions/privapp-permissions-elgoog.xml b/prebuilt/etc/permissions/privapp-permissions-elgoog.xml
+index 0a7c269f..a3fe9523 100644
+--- a/prebuilt/etc/permissions/privapp-permissions-elgoog.xml
++++ b/prebuilt/etc/permissions/privapp-permissions-elgoog.xml
+@@ -450,4 +450,8 @@ It allows additional grants on top of privapp-permissions-platform.xml
+     <privapp-permissions package="com.android.timezone.updater">
+         <permission name="android.permission.UPDATE_TIME_ZONE_RULES" />
+     </privapp-permissions>
++
++    <privapp-permissions package="com.google.android.apps.wellbeing">
++        <permission name="android.permission.MODIFY_PHONE_STATE"/>
++    </privapp-permissions>
+ </permissions>
+-- 
+2.17.1
+

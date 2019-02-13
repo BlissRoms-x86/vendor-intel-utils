@@ -1,0 +1,37 @@
+From 441c7f3ebaf200c234eebb18259dfa336ba33301 Mon Sep 17 00:00:00 2001
+From: Jackeagle <jackeagle102@gmail.com>
+Date: Mon, 3 Dec 2018 10:55:52 -0500
+Subject: [PATCH 3/9] Revert "kernel: Remove kernel{x}config"
+
+This reverts commit 12c4070d98e0bb69869874d8fcaa22769a07d994.
+---
+ build/tasks/kernel.mk | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/build/tasks/kernel.mk b/build/tasks/kernel.mk
+index 7a674ee9..61d63bcc 100644
+--- a/build/tasks/kernel.mk
++++ b/build/tasks/kernel.mk
+@@ -251,7 +251,18 @@ kerneltags: $(KERNEL_CONFIG)
+ 	$(hide) mkdir -p $(KERNEL_OUT)
+ 	$(MAKE) -C $(KERNEL_SRC) O=$(KERNEL_OUT) ARCH=$(KERNEL_ARCH) $(KERNEL_CROSS_COMPILE) $(KERNEL_CLANG_TRIPLE) $(KERNEL_CC) tags
+ 
+-.PHONY: kernelsavedefconfig alldefconfig
++.PHONY: kernelconfig kernelxconfig kernelsavedefconfig alldefconfig
++
++kernelconfig:  KERNELCONFIG_MODE := menuconfig
++kernelxconfig: KERNELCONFIG_MODE := xconfig
++kernelxconfig kernelconfig:
++	$(hide) mkdir -p $(KERNEL_OUT)
++	$(MAKE) $(KERNEL_MAKE_FLAGS) -C $(KERNEL_SRC) O=$(KERNEL_OUT) ARCH=$(KERNEL_ARCH) $(KERNEL_CROSS_COMPILE) $(KERNEL_CLANG_TRIPLE) $(KERNEL_CC) $(KERNEL_DEFCONFIG)
++	env KCONFIG_NOTIMESTAMP=true \
++		 $(MAKE) -C $(KERNEL_SRC) O=$(KERNEL_OUT) ARCH=$(KERNEL_ARCH) $(KERNEL_CROSS_COMPILE) $(KERNEL_CLANG_TRIPLE) $(KERNEL_CC) $(KERNELCONFIG_MODE)
++	env KCONFIG_NOTIMESTAMP=true \
++		 $(MAKE) -C $(KERNEL_SRC) O=$(KERNEL_OUT) ARCH=$(KERNEL_ARCH) $(KERNEL_CROSS_COMPILE) $(KERNEL_CLANG_TRIPLE) $(KERNEL_CC) savedefconfig
++	cp $(KERNEL_OUT)/defconfig $(KERNEL_DEFCONFIG_SRC)
+ 
+ kernelsavedefconfig:
+ 	$(hide) mkdir -p $(KERNEL_OUT)
+-- 
+2.17.1
+

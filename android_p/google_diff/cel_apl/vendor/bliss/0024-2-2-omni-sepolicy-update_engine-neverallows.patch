@@ -1,0 +1,48 @@
+From 755122056167d95fd5d27ed27cd9823a566cfe5a Mon Sep 17 00:00:00 2001
+From: maxwen <max.weninger@gmail.com>
+Date: Wed, 3 Oct 2018 19:13:17 +0200
+Subject: [PATCH 4/4] [2/2] omni: sepolicy: update_engine neverallows
+
+Change-Id: I8ea72d91173f4ea6985609ad62e44d30e8a4ac57
+---
+ sepolicy/private/otapreopt_chroot.te |  3 +--
+ sepolicy/private/update_engine.te    | 13 ++++++++++---
+ 2 files changed, 11 insertions(+), 5 deletions(-)
+
+diff --git a/sepolicy/private/otapreopt_chroot.te b/sepolicy/private/otapreopt_chroot.te
+index ecaef4ae..d733f148 100644
+--- a/sepolicy/private/otapreopt_chroot.te
++++ b/sepolicy/private/otapreopt_chroot.te
+@@ -1,3 +1,2 @@
+ allow otapreopt_chroot postinstall_file:lnk_file read;
+-#allow otapreopt_chroot system_file:dir mounton;
+-
++allow otapreopt_chroot system_file:dir mounton;
+diff --git a/sepolicy/private/update_engine.te b/sepolicy/private/update_engine.te
+index 0a60e7e1..d2ddcbeb 100644
+--- a/sepolicy/private/update_engine.te
++++ b/sepolicy/private/update_engine.te
+@@ -5,10 +5,17 @@ allow update_engine self:capability { chown fsetid };
+ 
+ allow update_engine labeledfs:filesystem { mount unmount };
+ 
+-allow update_engine { otapreopt_chroot_exec rootfs system_file toolbox_exec }:file rx_file_perms;
++allow update_engine { otapreopt_chroot_exec toolbox_exec }:file rx_file_perms;
+ 
+ allow update_engine labeledfs:filesystem mount;
+-allow update_engine rootfs:dir { add_name write };
++allow update_engine rootfs:file { create setattr write rx_file_perms unlink relabelfrom rename };
++allow update_engine rootfs:dir { create write open add_name read rmdir remove_name };
++
++allow update_engine system_data_file:file { create read write open unlink };
++allow update_engine system_data_file:dir { create write add_name read remove_name unlink };
++
++allow update_engine system_file:file { create setattr write relabelto relabelfrom rx_file_perms unlink };
++allow update_engine system_file:dir { create setattr write rmdir remove_name add_name };
++
+ allow update_engine storage_file:lnk_file read;
+-allow update_engine system_file:file execute_no_trans;
+ allow update_engine toolbox_exec:file { execute getattr };
+-- 
+2.17.1
+

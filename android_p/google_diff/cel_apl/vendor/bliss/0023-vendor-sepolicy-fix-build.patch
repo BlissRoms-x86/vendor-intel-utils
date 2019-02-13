@@ -1,0 +1,61 @@
+From d3d32e6ea9a6af8962f6da9ac195af2a84a92aa9 Mon Sep 17 00:00:00 2001
+From: Marko Man <darkobas@gmail.com>
+Date: Sat, 1 Sep 2018 19:21:27 +0200
+Subject: [PATCH 3/4] vendor: sepolicy fix build
+
+merged too soon
+
+Change-Id: I70a950ca6181b809edfc9089fc34af1c4418194f
+---
+ sepolicy/private/hal_bootctl.te      |  2 ++
+ sepolicy/private/otapreopt_chroot.te |  3 +++
+ sepolicy/private/update_engine.te    | 13 +++++++------
+ 3 files changed, 12 insertions(+), 6 deletions(-)
+ create mode 100644 sepolicy/private/hal_bootctl.te
+ create mode 100644 sepolicy/private/otapreopt_chroot.te
+
+diff --git a/sepolicy/private/hal_bootctl.te b/sepolicy/private/hal_bootctl.te
+new file mode 100644
+index 00000000..0b8be884
+--- /dev/null
++++ b/sepolicy/private/hal_bootctl.te
+@@ -0,0 +1,2 @@
++allow hal_bootctl self:capability sys_admin;
++
+diff --git a/sepolicy/private/otapreopt_chroot.te b/sepolicy/private/otapreopt_chroot.te
+new file mode 100644
+index 00000000..ecaef4ae
+--- /dev/null
++++ b/sepolicy/private/otapreopt_chroot.te
+@@ -0,0 +1,3 @@
++allow otapreopt_chroot postinstall_file:lnk_file read;
++#allow otapreopt_chroot system_file:dir mounton;
++
+diff --git a/sepolicy/private/update_engine.te b/sepolicy/private/update_engine.te
+index 309699ae..0a60e7e1 100644
+--- a/sepolicy/private/update_engine.te
++++ b/sepolicy/private/update_engine.te
+@@ -1,13 +1,14 @@
+-allow update_engine self:capability { dac_override dac_read_search sys_rawio };
+-
+ r_dir_file(update_engine, mnt_user_file)
+ r_dir_file(update_engine, storage_file)
+ 
+-allow update_engine self:capability { chown fsetid sys_rawio };
++allow update_engine self:capability { chown fsetid };
+ 
+ allow update_engine labeledfs:filesystem { mount unmount };
+ 
+-allow update_engine { media_rw_data_file rootfs sdcardfs system_data_file system_file }:dir create_dir_perms;
+-allow update_engine { media_rw_data_file rootfs sdcardfs system_data_file system_file }:{ file lnk_file } create_file_perms;
+ allow update_engine { otapreopt_chroot_exec rootfs system_file toolbox_exec }:file rx_file_perms;
+-allow update_engine { rootfs system_file }:file { relabelfrom relabelto };
++
++allow update_engine labeledfs:filesystem mount;
++allow update_engine rootfs:dir { add_name write };
++allow update_engine storage_file:lnk_file read;
++allow update_engine system_file:file execute_no_trans;
++allow update_engine toolbox_exec:file { execute getattr };
+-- 
+2.17.1
+

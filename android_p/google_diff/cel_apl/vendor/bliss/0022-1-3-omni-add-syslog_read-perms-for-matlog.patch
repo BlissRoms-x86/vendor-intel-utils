@@ -1,0 +1,38 @@
+From c99a6998428ba547f7dc6e569db75140a1e4fcab Mon Sep 17 00:00:00 2001
+From: maxwen <max.weninger@gmail.com>
+Date: Mon, 1 Oct 2018 16:37:20 +0200
+Subject: [PATCH 2/4] [1/3] omni: add syslog_read perms for matlog
+
+Change-Id: I167fa41ba7a379e469f31cda8f37cbc2e1c133df
+---
+ sepolicy/private/platform_app.te | 1 +
+ sepolicy/private/priv_app.te     | 2 +-
+ sepolicy/private/shell.te        | 1 +
+ 3 files changed, 3 insertions(+), 1 deletion(-)
+ create mode 100644 sepolicy/private/platform_app.te
+
+diff --git a/sepolicy/private/platform_app.te b/sepolicy/private/platform_app.te
+new file mode 100644
+index 00000000..7652ae9d
+--- /dev/null
++++ b/sepolicy/private/platform_app.te
+@@ -0,0 +1 @@
++allow platform_app kernel:system syslog_read;
+diff --git a/sepolicy/private/priv_app.te b/sepolicy/private/priv_app.te
+index 8a0d523f..423003d9 100644
+--- a/sepolicy/private/priv_app.te
++++ b/sepolicy/private/priv_app.te
+@@ -1,2 +1,2 @@
+ allow priv_app ota_package_file:dir create_dir_perms;
+-
++allow priv_app kernel:system syslog_read;
+diff --git a/sepolicy/private/shell.te b/sepolicy/private/shell.te
+index 4754ffc8..b9d6dcfc 100644
+--- a/sepolicy/private/shell.te
++++ b/sepolicy/private/shell.te
+@@ -1 +1,2 @@
+ allow shell otapreopt_chroot_exec:file getattr;
++allow shell kernel:system syslog_read;
+-- 
+2.17.1
+
