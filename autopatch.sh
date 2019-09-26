@@ -161,8 +161,8 @@ if [[ -e ${private_utils_dir} ]] && [[ -d ${private_utils_dir} ]];then
     if [[ "$conflict" == "y" ]]; then
       echo -e "\n\t\tALERT : Conflicts Observed while patch application !!           "
       for i in $conflict_list ; do echo $i; done | sort -u
-      echo -e "\n\t\tError: Please resolve Conflict(s) and re-run lunch..."
-      echo '$(error "Conflicts seen while applying lunch patches !! Resolve and re-trigger")' > $top_dir/vendor/intel/utils_priv/Android.mk
+      echo -e "\n\t\tWarning: There were some Conflicts, please check them and re-run lunch..."
+      # echo '$(error "Conflicts seen while applying lunch patches !! Resolve and re-trigger")' > $top_dir/vendor/intel/utils_priv/Android.mk
     else
       echo -e "\n\t\tSUCCESS : All patches applied SUCCESSFULLY in `basename ${private_patch_dir_aosp}` and `basename ${private_patch_dir_bsp}`"
       if [[ "$applied_already" == "y" ]]; then
